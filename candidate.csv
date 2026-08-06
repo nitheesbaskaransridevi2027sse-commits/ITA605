@@ -1,0 +1,6 @@
+Color,Size,Shape,Surface,Class
+Red,Small,Round,Smooth,Yes
+Red,Medium,Round,Smooth,Yes
+Blue,Small,Round,Rough,No
+Red,Large,Round,Smooth,Yes
+Green,Medium,Square,Rough,No
