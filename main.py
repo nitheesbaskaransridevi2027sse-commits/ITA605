@@ -1,41 +1,40 @@
-import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-# Load dataset
-data = pd.read_csv("dataset.csv")
+# Load Iris dataset
+iris = load_iris()
 
-print("Training Data:\n")
-print(data)
+X = iris.data
+y = iris.target
 
-# Attributes (all columns except target)
-concepts = data.iloc[:, :-1].values
+# Split dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
 
-# Target column
-target = data.iloc[:, -1].values
+# Create KNN model
+knn = KNeighborsClassifier(n_neighbors=3)
 
-# Initialize hypothesis
-hypothesis = None
+# Train the model
+knn.fit(X_train, y_train)
 
-print("\nApplying FIND-S Algorithm...\n")
+# Predict on test data
+y_pred = knn.predict(X_test)
 
-for i in range(len(concepts)):
+# Calculate accuracy
+accuracy = accuracy_score(y_test, y_pred)
 
-    if target[i] == "Yes":
+print("\nK-Nearest Neighbours Results\n")
 
-        if hypothesis is None:
-            hypothesis = concepts[i].copy()
+print("Accuracy : {:.2f}%".format(accuracy * 100))
 
-        else:
+print("\nConfusion Matrix")
+print(confusion_matrix(y_test, y_pred))
 
-            for j in range(len(hypothesis)):
-
-                if hypothesis[j] != concepts[i][j]:
-                    hypothesis[j] = "?"
-
-        print("After Positive Example", i + 1)
-        print(hypothesis)
-        print()
-
-print("----------------------------------")
-print("Final Most Specific Hypothesis")
-print("----------------------------------")
-print(hypothesis)
+print("\nClassification Report")
+print(classification_report(y_test, y_pred))
