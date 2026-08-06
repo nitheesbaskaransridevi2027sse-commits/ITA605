@@ -1,78 +1,41 @@
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
 
-from neural_network import NeuralNetwork
+# Load dataset
+data = pd.read_csv("dataset.csv")
 
+print("Training Data:\n")
+print(data)
 
-# Load Iris Dataset
+# Attributes (all columns except target)
+concepts = data.iloc[:, :-1].values
 
-iris = load_iris()
+# Target column
+target = data.iloc[:, -1].values
 
-X = iris.data
+# Initialize hypothesis
+hypothesis = None
 
-y = iris.target.reshape(-1, 1)
+print("\nApplying FIND-S Algorithm...\n")
 
-# Normalize inputs
+for i in range(len(concepts)):
 
-scaler = MinMaxScaler()
+    if target[i] == "Yes":
 
-X = scaler.fit_transform(X)
+        if hypothesis is None:
+            hypothesis = concepts[i].copy()
 
-# One Hot Encode outputs
+        else:
 
-encoder = OneHotEncoder(sparse_output=False)
+            for j in range(len(hypothesis)):
 
-y = encoder.fit_transform(y)
+                if hypothesis[j] != concepts[i][j]:
+                    hypothesis[j] = "?"
 
-# Split dataset
+        print("After Positive Example", i + 1)
+        print(hypothesis)
+        print()
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42
-)
-
-# Create Neural Network
-
-nn = NeuralNetwork(
-    input_size=4,
-    hidden_size=8,
-    output_size=3,
-    learning_rate=0.5
-)
-
-# Train
-
-losses = nn.train(
-    X_train,
-    y_train,
-    epochs=1000
-)
-
-# Test
-
-predictions = nn.predict(X_test)
-
-actual = y_test.argmax(axis=1)
-
-accuracy = (predictions == actual).mean() * 100
-
-print()
-
-print("Testing Accuracy : {:.2f}%".format(accuracy))
-
-# Plot Loss
-
-plt.plot(losses)
-
-plt.title("Training Loss")
-
-plt.xlabel("Epoch")
-
-plt.ylabel("Loss")
-
-plt.show()
+print("----------------------------------")
+print("Final Most Specific Hypothesis")
+print("----------------------------------")
+print(hypothesis)
